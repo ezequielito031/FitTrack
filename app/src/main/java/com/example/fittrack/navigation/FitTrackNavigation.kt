@@ -17,7 +17,6 @@ fun FitTrackNavigation(
     viewModel: WorkoutViewModel
 ) {
     val navController = rememberNavController()
-
     val uiState = viewModel.uiState
 
     NavHost(
@@ -25,10 +24,9 @@ fun FitTrackNavigation(
         startDestination = "dashboard"
     ) {
 
-        // SCREEN 1
-        composable(
-            route = "dashboard"
-        ) {
+        // SCREEN 1 - DASHBOARD
+        composable("dashboard") {
+
             DashboardScreen(
                 uiState = uiState,
 
@@ -44,7 +42,7 @@ fun FitTrackNavigation(
             )
         }
 
-        // SCREEN 2
+        // SCREEN 2 - EXERCISE LIST
         composable(
             route = "exerciseList/{category}",
             arguments = listOf(
@@ -80,7 +78,7 @@ fun FitTrackNavigation(
             )
         }
 
-        // SCREEN 3
+        // SCREEN 3 - EXERCISE DETAILS
         composable(
             route = "exerciseDetail/{exerciseId}",
             arguments = listOf(
@@ -106,6 +104,7 @@ fun FitTrackNavigation(
                     exercise = exercise,
 
                     onLogWorkout = { exerciseName, duration ->
+
                         viewModel.logWorkout(
                             exerciseName = exerciseName,
                             durationMinutes = duration

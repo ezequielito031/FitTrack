@@ -1,5 +1,5 @@
 package com.example.fittrack.ui.theme
-
+import androidx.compose.ui.graphics.Color
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -11,44 +11,82 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+private val LightColorScheme = lightColorScheme(
+    primary = FitBlue,
+    onPrimary = FitSurface,
+
+    primaryContainer = Color(0xFFDCE6FF),
+    onPrimaryContainer = FitBlueDark,
+
+    secondary = FitGreen,
+    onSecondary = FitSurface,
+
+    secondaryContainer = FitGreenLight,
+    onSecondaryContainer = Color(0xFF14532D),
+
+    tertiary = FitOrange,
+
+    error = FitRed,
+
+    background = FitBackground,
+    onBackground = FitTextPrimary,
+
+    surface = FitSurface,
+    onSurface = FitTextPrimary,
+
+    surfaceVariant = Color(0xFFE9EDF5),
+    onSurfaceVariant = FitTextSecondary
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+private val DarkColorScheme = darkColorScheme(
+    primary = Color(0xFFAFC6FF),
+    onPrimary = Color(0xFF002C73),
 
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    primaryContainer = Color(0xFF1746B3),
+    onPrimaryContainer = Color(0xFFDCE6FF),
+
+    secondary = Color(0xFF8BD4AD),
+    onSecondary = Color(0xFF003920),
+
+    secondaryContainer = Color(0xFF14532D),
+    onSecondaryContainer = Color(0xFFD7F2E5),
+
+    tertiary = Color(0xFFFFC66A),
+
+    error = Color(0xFFFFB4AB),
+
+    background = FitDarkBackground,
+    onBackground = Color(0xFFE4E5EA),
+
+    surface = FitDarkSurface,
+    onSurface = Color(0xFFE4E5EA),
+
+    surfaceVariant = Color(0xFF2A2D35),
+    onSurfaceVariant = Color(0xFFC5C7D0)
 )
 
 @Composable
 fun FitTrackTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+    val colorScheme =
+        if (dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
+            if (darkTheme) {
+                dynamicDarkColorScheme(context)
+            } else {
+                dynamicLightColorScheme(context)
+            }
+        } else {
+            if (darkTheme) {
+                DarkColorScheme
+            } else {
+                LightColorScheme
+            }
+        }
 
     MaterialTheme(
         colorScheme = colorScheme,
