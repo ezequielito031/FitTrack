@@ -1,34 +1,38 @@
 package com.example.fittrack.gui
-
+import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.DirectionsRun
+import androidx.compose.material.icons.filled.FitnessCenter
+import androidx.compose.material.icons.filled.SelfImprovement
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.fittrack.model.Exercise
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExerciseListScreen(
     category: String,
@@ -36,33 +40,14 @@ fun ExerciseListScreen(
     onExerciseClick: (Int) -> Unit,
     onBackClick: () -> Unit
 ) {
+
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text(
-                            text = category,
-                            fontWeight = FontWeight.Bold
-                        )
-
-                        Text(
-                            text = "${exercises.size} exercises",
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                    }
-                },
-
-                navigationIcon = {
-                    IconButton(
-                        onClick = onBackClick
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                }
+            FitTrackTopBar(
+                title = category,
+                subtitle = "${exercises.size} exercises",
+                showBackButton = true,
+                onBackClick = onBackClick
             )
         }
     ) { innerPadding ->
@@ -76,10 +61,11 @@ fun ExerciseListScreen(
         ) {
 
             item {
+
                 Text(
                     text = "Choose an Exercise",
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(
                         top = 8.dp,
                         bottom = 4.dp
@@ -108,53 +94,90 @@ fun ExerciseCard(
     exercise: Exercise,
     onClick: () -> Unit
 ) {
+
+    val exerciseIcon =
+        categoryIcon(
+            category = exercise.category
+        )
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
                 onClick()
             },
-
-        shape = RoundedCornerShape(20.dp),
-
+        shape = RoundedCornerShape(22.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 4.dp
         )
     ) {
 
-        Column(
-            modifier = Modifier.padding(18.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(18.dp),
+            horizontalArrangement = Arrangement.spacedBy(14.dp),
+            verticalAlignment = Alignment.Top
         ) {
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+            Surface(
+                modifier = Modifier.size(48.dp),
+                shape = CircleShape,
+                color = categoryContainerColor(
+                    category = exercise.category
+                )
             ) {
 
-                Text(
-                    text = exercise.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.weight(1f)
-                )
+                Box(
+                    contentAlignment = Alignment.Center
+                ) {
 
-                DifficultyBadge(
-                    difficulty = exercise.difficulty
-                )
+                    Icon(
+                        imageVector = exerciseIcon,
+                        contentDescription = exercise.category,
+                        tint = categoryIconColor(
+                            category = exercise.category
+                        )
+                    )
+                }
             }
 
-            Text(
-                text = exercise.preview,
-                style = MaterialTheme.typography.bodyMedium
-            )
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(9.dp)
+            ) {
 
-            Text(
-                text = "Recommended: ${exercise.recommendedDuration} min",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Medium
-            )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    Text(
+                        text = exercise.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    DifficultyBadge(
+                        difficulty = exercise.difficulty
+                    )
+                }
+
+                Text(
+                    text = exercise.preview,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Text(
+                    text = "Recommended: ${exercise.recommendedDuration} min",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
         }
     }
 }
@@ -198,12 +221,72 @@ fun DifficultyBadge(
         Text(
             text = difficulty,
             modifier = Modifier.padding(
-                horizontal = 10.dp,
+                horizontal = 9.dp,
                 vertical = 5.dp
             ),
-            style = MaterialTheme.typography.labelMedium,
+            style = MaterialTheme.typography.labelSmall,
             color = textColor,
             fontWeight = FontWeight.SemiBold
         )
+    }
+}
+
+fun categoryIcon(
+    category: String
+): ImageVector {
+
+    return when (category) {
+
+        "Strength" ->
+            Icons.Default.FitnessCenter
+
+        "Cardio" ->
+            Icons.Default.DirectionsRun
+
+        "Flexibility" ->
+            Icons.Default.SelfImprovement
+
+        else ->
+            Icons.Default.Bolt
+    }
+}
+
+fun categoryContainerColor(
+    category: String
+): Color {
+
+    return when (category) {
+
+        "Strength" ->
+            Color(0xFFDCE6FF)
+
+        "Cardio" ->
+            Color(0xFFFFE0DC)
+
+        "Flexibility" ->
+            Color(0xFFD9F2E5)
+
+        else ->
+            Color(0xFFEADFFF)
+    }
+}
+
+fun categoryIconColor(
+    category: String
+): Color {
+
+    return when (category) {
+
+        "Strength" ->
+            Color(0xFF2F6BFF)
+
+        "Cardio" ->
+            Color(0xFFCC3D3D)
+
+        "Flexibility" ->
+            Color(0xFF268A5E)
+
+        else ->
+            Color(0xFF7653B5)
     }
 }
